@@ -5,9 +5,9 @@ import pickle
 import pandas as pd
 from sklearn.linear_model import LogisticRegression
 
-# Load model
-model = LogisticRegression()
-model.fit([[1]*13], [0])  # Dummy fit to avoid error on deployment; replace with actual model load
+# Load trained model from pickle
+with open('model.pkl', 'rb') as file:
+    model = pickle.load(file)
 
 st.title('Heart Disease Predictor')
 
