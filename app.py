@@ -1,40 +1,38 @@
-# app.py
 import streamlit as st
 import numpy as np
 import pickle
-import pandas as pd
-from sklearn.linear_model import LogisticRegression
 
-# Load trained model from pickle
+# Load the trained model
 with open('model.pkl', 'rb') as file:
     model = pickle.load(file)
 
-st.title('Heart Disease Predictor')
+st.title("Heart Disease Prediction App")
+
+st.markdown("Enter the following medical details:")
 
 # Input fields
-age = st.number_input('Age', 1, 120)
-sex = st.selectbox('Sex', ['Male', 'Female'])
-cp = st.selectbox('Chest Pain Type (0-3)', list(range(4)))
-trestbps = st.number_input('Resting Blood Pressure', 80, 200)
-chol = st.number_input('Serum Cholesterol', 100, 600)
-fbs = st.selectbox('Fasting Blood Sugar > 120 mg/dl', [0, 1])
-restecg = st.selectbox('Resting ECG (0-2)', list(range(3)))
-thalach = st.number_input('Max Heart Rate Achieved', 60, 250)
-exang = st.selectbox('Exercise Induced Angina', [0, 1])
-oldpeak = st.number_input('Oldpeak (ST depression)', 0.0, 10.0)
-slope = st.selectbox('Slope of peak exercise ST segment (0-2)', list(range(3)))
-ca = st.selectbox('Number of major vessels (0-3)', list(range(4)))
-thal = st.selectbox('Thalassemia (1=normal; 2=fixed; 3=reversable)', [1, 2, 3])
+age = st.number_input("Age", min_value=1, max_value=120, step=1)
+sex = st.selectbox("Sex", [0, 1])  # 0 = female, 1 = male
+cp = st.selectbox("Chest Pain Type (cp)", [0, 1, 2, 3])
+trestbps = st.number_input("Resting Blood Pressure (trestbps)", min_value=80, max_value=200)
+chol = st.number_input("Serum Cholesterol (chol)", min_value=100, max_value=600)
+fbs = st.selectbox("Fasting Blood Sugar > 120 mg/dl (fbs)", [0, 1])
+restecg = st.selectbox("Resting ECG Results (restecg)", [0, 1, 2])
+thalach = st.number_input("Maximum Heart Rate Achieved (thalach)", min_value=50, max_value=250)
+exang = st.selectbox("Exercise Induced Angina (exang)", [0, 1])
+oldpeak = st.number_input("ST Depression Induced by Exercise (oldpeak)", step=0.1)
+slope = st.selectbox("Slope of Peak Exercise ST Segment (slope)", [0, 1, 2])
+ca = st.selectbox("Number of Major Vessels Colored by Fluoroscopy (ca)", [0, 1, 2, 3])
+thal = st.selectbox("Thalassemia (thal)", [0, 1, 2, 3])
 
-# Process input
-if st.button('Predict'):
-    input_data = [age, 1 if sex == 'Male' else 0, cp, trestbps, chol, fbs, restecg,
-                  thalach, exang, oldpeak, slope, ca, thal]
-    input_data_np = np.asarray(input_data).reshape(1, -1)
+# Predict
+if st.button("Predict"):
+    input_data = np.array([[age, sex, cp, trestbps, chol, fbs, restecg,
+                             thalach, exang, oldpeak, slope, ca, thal]])
     
-    prediction = model.predict(input_data_np)
-    
+    prediction = model.predict(input_data)
+
     if prediction[0] == 1:
-        st.error("The person HAS heart disease.")
+        st.error("⚠️ The person is likely to have heart disease.")
     else:
-        st.success("The person does NOT have heart disease.")
+        st.success("✅ The person is unlikely to have heart disease.")
